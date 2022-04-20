@@ -1,5 +1,6 @@
 package server
 
+import Message
 import java.io.OutputStream
 import java.net.Socket
 import java.nio.charset.Charset
@@ -9,12 +10,10 @@ class ClientHandler(private val client: Socket) {
     private val reader: Scanner = Scanner(client.getInputStream())
     private val writer: OutputStream = client.getOutputStream()
     private var running: Boolean = false
+    private var nick: String = ""
 
     fun run() {
         running = true
-        write("Welcome to the club buddy!\n" +
-                "To Exit, write: 'EXIT'.\n" +
-                "Chat:\n")
         while (running) {
             try {
                 val text = reader.nextLine()
@@ -22,14 +21,16 @@ class ClientHandler(private val client: Socket) {
                     shutdown()
                     continue
                 }
-                else {write("${Calendar.getInstance().time}|Master's answer: $text")}
+                else {
+                    //val answer = Message(nick, text, Calendar.getInstance().time.toString()).transfer()
+                    write("Server get: $text")
+                }
             } catch (ex: Exception) {
                 write("Something gone wrong :(")
                 shutdown()
             }
         }
     }
-
     private fun write(message: String) {
         writer.write((message + '\n').toByteArray(Charset.defaultCharset()))
     }
