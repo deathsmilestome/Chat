@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
 class Client(address: String, port: Int) {
     private val connection: Socket = Socket(address, port)
     private var connected: Boolean = true
-    private var nick: String = ""
+    var nick: String = ""
 
     init {
         println("Connected to server at $address on port $port")
@@ -23,6 +23,7 @@ class Client(address: String, port: Int) {
         thread { read() }
         println("Nick: ")
         nick = readLine() ?: ""
+        write(nick)
         println("Welcome to the club, buddy!\n" +
                 "To Exit, write: 'EXIT'.\n" +
                 "Chat:\n")
@@ -44,7 +45,12 @@ class Client(address: String, port: Int) {
     }
 
     private fun read() {
-        while (connected)
-            println(reader.nextLine())
+        while (connected) {
+//            println(reader.nextLine())
+            val result = """:::""".toRegex().split(reader.nextLine())
+            println(result[0] + "\n" +
+                    "Nick: " + result[1] + "\n" +
+                    "Said: " + result[2].replace("\\:", ":"))
+        }
     }
 }

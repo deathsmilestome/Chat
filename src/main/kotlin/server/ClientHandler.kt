@@ -5,15 +5,16 @@ import java.io.OutputStream
 import java.net.Socket
 import java.nio.charset.Charset
 import java.util.*
+import client.Client
 
-class ClientHandler(private val client: Socket) {
+class ClientHandler(val client: Socket, val otherClients: Set<ClientHandler>) {
     private val reader: Scanner = Scanner(client.getInputStream())
-    private val writer: OutputStream = client.getOutputStream()
     private var running: Boolean = false
-    private var nick: String = ""
+    var nick: String = ""
 
     fun run() {
         running = true
+        nick = reader.nextLine()
         while (running) {
             try {
                 val text = reader.nextLine()
@@ -22,17 +23,22 @@ class ClientHandler(private val client: Socket) {
                     continue
                 }
                 else {
-                    //val answer = Message(nick, text, Calendar.getInstance().time.toString()).transfer()
-                    write("Server get: $text")
+                    write(text)
                 }
-            } catch (ex: Exception) {
+            }
+            catch (ex: Exception) {
                 write("Something gone wrong :(")
                 shutdown()
             }
         }
     }
     private fun write(message: String) {
-        writer.write((message + '\n').toByteArray(Charset.defaultCharset()))
+        otherClients.forEach { client ->
+            if (client.nick != this.nick) {
+                val writer: OutputStream = client.client.getOutputStream()
+                writer.write((message + '\n').toByteArray(Charset.defaultCharset()))
+            }
+        }
     }
 
     private fun shutdown() {
@@ -40,5 +46,4 @@ class ClientHandler(private val client: Socket) {
         client.close()
         println("${client.inetAddress.hostAddress} closed the connection")
     }
-
 }
