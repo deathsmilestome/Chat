@@ -6,6 +6,8 @@ import java.net.Socket
 import java.nio.charset.Charset
 import java.util.*
 import client.Client
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ClientHandler(val client: Socket, val otherClients: Set<ClientHandler>) {
     private val reader: Scanner = Scanner(client.getInputStream())
@@ -23,7 +25,9 @@ class ClientHandler(val client: Socket, val otherClients: Set<ClientHandler>) {
                     continue
                 }
                 else {
-                    write(text)
+                    val result = """:::""".toRegex().split(text)
+                    val answer = Message(result[1], result[2], LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).checkForFile()
+                    write(answer)
                 }
             }
             catch (ex: Exception) {
