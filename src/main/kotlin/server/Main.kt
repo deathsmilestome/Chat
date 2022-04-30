@@ -1,8 +1,9 @@
-import server.ClientHandler
+package server
+
 import java.net.ServerSocket
 import kotlin.concurrent.thread
 
-fun main(args: Array<String>) {
+fun main() {
     val server = ServerSocket(8080)
     println("Server is running on port ${server.localPort}")
     val clients = mutableSetOf<ClientHandler>()

@@ -2,25 +2,30 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class Message(val nick: String, val text: String, val date: String, val fileName: String? = null, val fileSize: Int? = null, val file: ByteArray? = null) {
+class Message(
+    private val nick: String,
+    private val text: String,
+    private val date: String,
+    private val fileName: String? = null,
+    private val fileSize: Int? = null,
+    var file: ByteArray? = null) {
 
     private fun getWithFile(path: String): Message {
         text
         val fileName = File(path).name
         val fileContent = Files.readAllBytes(Paths.get(path))
+        this.file = fileContent
         val fileSize = fileContent.size
-        println(fileContent.toString())
         return Message(nick, text, date, fileName, fileSize, fileContent)
     }
+
     fun checkForFile(): String {
-        val messageSplited = text.split("file-:")
-        if (messageSplited.size > 1) {
-            if (File(messageSplited[1].trim()).exists()) {
-                return getWithFile(messageSplited[1].trim()).transferWithFile()
-            }
-            else return Message(nick, "error", date).transfer()
-        }
-        else return Message(nick, text, date).transfer()
+        val messageSpited = text.split("file-:")
+        return if (messageSpited.size > 1) {
+            if (File(messageSpited[1].trim()).exists()) {
+                getWithFile(messageSpited[1].trim()).transferWithFile()
+            } else Message(nick, "error", date).transfer()
+        } else Message(nick, text, date).transfer()
     }
 
     private fun transfer(): String {
@@ -35,9 +40,7 @@ class Message(val nick: String, val text: String, val date: String, val fileName
                 nick + ":::" +
                 text + ":::" +
                 fileName + ":::" +
-                fileSize + ":::" +
-                file.toString()
+                fileSize.toString()
                     .replace(":", "\\:")
     }
-
 }

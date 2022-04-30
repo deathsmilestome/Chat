@@ -1,6 +1,6 @@
 package client
 
-fun main(args: Array<String>) {
+fun main() {
     val address = "localhost"
     val port = 8080
     val client = Client(address, port)
