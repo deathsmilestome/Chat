@@ -54,7 +54,6 @@ class ClientHandler(private val client: Socket, private val otherClients: Set<Cl
             for (i in 0 until 4 ) {
                 size = size shl 8
                 size += reader.read() and 0xff
-
             }
             val msgBytes = ByteArray(size)
             for (i in 0 until size) {

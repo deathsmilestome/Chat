@@ -33,7 +33,15 @@ class Client(address: String, port: Int) {
                 "To Exit, write: '-exit-'.\n" +
                 "Chat:\n")
         while (connected) {
-            val input = readLine() ?: ""
+            //val input = readLine() ?: ""
+            var tempInput = ""
+            val inputList = mutableListOf<String>()
+            while ("-send-" !in tempInput) {
+                tempInput = readLine() ?: ""
+                inputList.add(tempInput)
+            }
+            inputList.remove("-send-")
+            val input = inputList.joinToString("\n")
             if ("-exit-" in input) {
                 connected = false
                 reader.close()
