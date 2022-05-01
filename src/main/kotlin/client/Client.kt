@@ -30,6 +30,9 @@ class Client(address: String, port: Int) {
         write(Message(nick, "|my nick is $nick|",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))))
         println("Welcome to the club, buddy!\n" +
+                "Type file-:Path to send file\n" +
+                "You can send only one file per message\n" +
+                "Type -send- on new line to send message\n" +
                 "To Exit, write: '-exit-'.\n" +
                 "Chat:\n")
         while (connected) {

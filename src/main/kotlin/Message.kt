@@ -20,11 +20,15 @@ class Message(
 
     fun checkForFile(): String {
         val messageSpited = text.split("file-:")
+        if (messageSpited.size > 2) {
+            println("You can send only one file per message")
+            return Message(nick, "|invalid message|", date).transfer()
+        }
         return if (messageSpited.size > 1) {
             val path = messageSpited[1].split(" ")[0]
             if (File(path).exists()) {
                 getWithFile(path).transferWithFile()
-            } else Message(nick, "error", date).transfer()
+            } else Message(nick, "invalid path", date).transfer()
         } else Message(nick, text, date).transfer()
     }
 
