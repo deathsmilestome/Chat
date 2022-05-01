@@ -36,7 +36,7 @@ class Client(address: String, port: Int) {
             //val input = readLine() ?: ""
             var tempInput = ""
             val inputList = mutableListOf<String>()
-            while ("-send-" !in tempInput) {
+            while ("-send-" != tempInput) {
                 tempInput = readLine() ?: ""
                 inputList.add(tempInput)
             }
