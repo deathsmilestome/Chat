@@ -79,7 +79,7 @@ class Client(address: String, port: Int) {
         val fos = FileOutputStream(resultFile)
         fos.write(file)
         fos.close()
-        return resultFile.absolutePath
+        return resultFile.absolutePath.replace("\\", "***")
     }
 
     private fun getFile(size: Int, stream: InputStream): ByteArray {
@@ -103,8 +103,8 @@ class Client(address: String, port: Int) {
                         + result[1] + "|"
                         + result[2]
                     .replace("\\:", ":")
-                    .replace("""file-:.*""".toRegex(), "[file]")
-                        + writeNewFile(result[3], getFile(result[4].toInt(), reader)))
+                    .replace("""file-:[^ ]*""".toRegex(), "[file]" + writeNewFile(result[3], getFile(result[4].toInt(), reader)).replace("***", "\\\\"))
+                        )
             }
             else println(result[0] + "|" + result[1] + "|" + result[2].replace("\\:", ":"))
         }

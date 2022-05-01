@@ -11,7 +11,6 @@ class Message(
     var file: ByteArray? = null) {
 
     private fun getWithFile(path: String): Message {
-        text
         val fileName = File(path).name
         val fileContent = Files.readAllBytes(Paths.get(path))
         this.file = fileContent
@@ -22,8 +21,9 @@ class Message(
     fun checkForFile(): String {
         val messageSpited = text.split("file-:")
         return if (messageSpited.size > 1) {
-            if (File(messageSpited[1].trim()).exists()) {
-                getWithFile(messageSpited[1].trim()).transferWithFile()
+            val path = messageSpited[1].split(" ")[0]
+            if (File(path).exists()) {
+                getWithFile(path).transferWithFile()
             } else Message(nick, "error", date).transfer()
         } else Message(nick, text, date).transfer()
     }
