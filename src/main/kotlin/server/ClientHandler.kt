@@ -10,13 +10,14 @@ import kotlin.concurrent.thread
 
 
 class ClientHandler(private val client: Socket, private val otherClients: Set<ClientHandler>) {
-    private val reader: InputStream = client.getInputStream()
+    private var reader: InputStream = client.getInputStream()
     private var running: Boolean = false
     private var nick: String = ""
 
-    fun run() {
+    fun run(stream: InputStream) {
         running = true
-        thread { read() }
+        reader = stream
+        thread { read(stream) }
         while (running) {
             val input = readLine() ?:""
             if ("-exit-" in input) shutdown()
@@ -47,7 +48,7 @@ class ClientHandler(private val client: Socket, private val otherClients: Set<Cl
         return fileBytes
     }
 
-    private fun read() {
+    private fun read(reader: InputStream) {
         var msg: Message
         while (running) {
             var size = 0
@@ -73,7 +74,7 @@ class ClientHandler(private val client: Socket, private val otherClients: Set<Cl
         }
     }
 
-    private fun shutdown() {
+    fun shutdown() {
         running = false
         client.close()
         println("${client.inetAddress.hostAddress} closed the connection")

@@ -13,6 +13,7 @@ fun main() {
         println("Client connected: ${client.inetAddress.hostAddress}")
         val clientHandler = ClientHandler(client, clients)
         clients.add(clientHandler)
-        thread { clientHandler.run() }
+        thread { clientHandler.run(client.getInputStream()) }
     }
+
 }

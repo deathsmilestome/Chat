@@ -22,7 +22,7 @@ class Message(
         val messageSpited = text.split("file-:")
         if (messageSpited.size > 2) {
             println("You can send only one file per message")
-            return Message(nick, "|invalid message|", date).transfer()
+            return Message(nick, "", date).transfer()
         }
         return if (messageSpited.size > 1) {
             val path = messageSpited[1].split(" ")[0]
