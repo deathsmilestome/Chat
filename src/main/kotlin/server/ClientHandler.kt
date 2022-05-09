@@ -47,7 +47,7 @@ class ClientHandler(private val client: Socket, private val otherClients: Set<Cl
             return msg
         }
 
-        fun getFile (reader: InputStream, size: Int): ByteArray {
+        private fun getFile (reader: InputStream, size: Int): ByteArray {
             val fileBytes = ByteArray(size)
             for (i in 0 until size) {
                 fileBytes[i] = reader.read().toByte()

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Message.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">consoleApp</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Message.kt</span></div><h1>Message.kt</h1><pre class="source lang-java linenums">import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+
+<span class="fc" id="L5">class Message(</span>
+<span class="fc" id="L6">    private val nick: String,</span>
+<span class="fc" id="L7">    private val text: String,</span>
+<span class="fc" id="L8">    private val date: String,</span>
+<span class="fc" id="L9">    private val fileName: String? = null,</span>
+<span class="fc" id="L10">    private val fileSize: Int? = null,</span>
+<span class="pc" id="L11">    var file: ByteArray? = null) {</span>
+
+    private fun getWithFile(path: String): Message {
+<span class="fc" id="L14">        val fileName = File(path).name</span>
+<span class="fc" id="L15">        val fileContent = Files.readAllBytes(Paths.get(path))</span>
+<span class="fc" id="L16">        this.file = fileContent</span>
+<span class="fc" id="L17">        val fileSize = fileContent.size</span>
+<span class="fc" id="L18">        return Message(nick, text, date, fileName, fileSize, fileContent)</span>
+    }
+
+    fun checkForFile(): String {
+<span class="fc" id="L22">        val messageSpited = text.split(&quot;file-:&quot;)</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (messageSpited.size &gt; 2) {</span>
+<span class="fc" id="L24">            println(&quot;You can send only one file per message&quot;)</span>
+<span class="fc" id="L25">            return Message(nick, &quot;&quot;, date).transfer()</span>
+        }
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        return if (messageSpited.size &gt; 1) {</span>
+<span class="fc" id="L28">            val path = messageSpited[1].split(&quot; &quot;)[0]</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">            if (File(path).exists()) {</span>
+<span class="fc" id="L30">                getWithFile(path).transferWithFile()</span>
+<span class="fc" id="L31">            } else Message(nick, &quot;invalid path&quot;, date).transfer()</span>
+<span class="fc" id="L32">        } else Message(nick, text, date).transfer()</span>
+    }
+
+    private fun transfer(): String {
+<span class="fc" id="L36">        return  date + &quot;:::&quot; +</span>
+<span class="fc" id="L37">                nick + &quot;:::&quot; +</span>
+<span class="fc" id="L38">                text</span>
+<span class="fc" id="L39">                    .replace(&quot;:&quot;, &quot;\\:&quot;)</span>
+    }
+
+    private fun transferWithFile(): String {
+<span class="fc" id="L43">        return  date + &quot;:::&quot; +</span>
+<span class="fc" id="L44">                nick + &quot;:::&quot; +</span>
+<span class="fc" id="L45">                text + &quot;:::&quot; +</span>
+<span class="fc" id="L46">                fileName + &quot;:::&quot; +</span>
+<span class="fc" id="L47">                fileSize.toString()</span>
+<span class="fc" id="L48">                    .replace(&quot;:&quot;, &quot;\\:&quot;)</span>
+    }
+<span class="fc" id="L50">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

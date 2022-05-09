@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+consoleApp,default,Message,4,254,0,6,0,33,1,10,1,7
+consoleApp,server,ClientHandler.Companion,0,240,0,10,0,26,0,9,0,4
+consoleApp,server,MainKt,0,57,0,0,0,9,0,1,0,1
+consoleApp,server,ClientHandler,93,58,12,2,17,8,9,3,2,3
+consoleApp,server,MainKt.main.new Function0() {...},12,0,0,0,1,0,1,0,1,0
+consoleApp,server,ClientHandler.run.new Function0() {...},6,0,0,0,1,0,1,0,1,0
+consoleApp,client,MainKt,3,10,0,0,2,3,0,1,0,1
+consoleApp,client,Client.run.new Function0() {...},4,0,0,0,1,0,1,0,1,0
+consoleApp,client,Client,444,88,20,2,53,15,15,3,4,3

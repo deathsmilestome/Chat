@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Client.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">consoleApp</a> &gt; <a href="index.source.html" class="el_package">client</a> &gt; <span class="el_source">Client.kt</span></div><h1>Client.kt</h1><pre class="source lang-java linenums">package client
+
+import Message
+import java.io.OutputStream
+import java.net.Socket
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.concurrent.thread
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+
+
+<span class="fc" id="L14">class Client(address: String, port: Int) {</span>
+<span class="fc" id="L15">    private val connection: Socket = Socket(address, port)</span>
+<span class="fc" id="L16">    private var connected: Boolean = true</span>
+<span class="fc" id="L17">    private var nick: String = &quot;&quot;</span>
+
+<span class="fc" id="L19">    init {</span>
+<span class="fc" id="L20">        println(&quot;Connected to server at $address on port $port&quot;)</span>
+<span class="fc" id="L21">    }</span>
+
+<span class="fc" id="L23">    private val reader: InputStream = connection.getInputStream()</span>
+<span class="fc" id="L24">    private val writer: OutputStream = connection.getOutputStream()</span>
+
+    fun run() {
+<span class="pc" id="L27">        thread { read() }</span>
+<span class="fc" id="L28">        println(&quot;Nick: &quot;)</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        nick = readLine() ?: &quot;&quot;</span>
+<span class="nc" id="L30">        write(Message(nick, &quot;|my nick is $nick|&quot;,</span>
+<span class="nc" id="L31">            LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;))))</span>
+<span class="nc" id="L32">        println(&quot;Welcome to the club, buddy!\n&quot; +</span>
+                &quot;Type file-:Path to send file\n&quot; +
+                &quot;You can send only one file per message\n&quot; +
+                &quot;Type -send- on new line to send message\n&quot; +
+                &quot;To Exit, write: '-exit-'.\n&quot; +
+                &quot;Chat:\n&quot;)
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        while (connected) {</span>
+            //val input = readLine() ?: &quot;&quot;
+<span class="nc" id="L40">            var tempInput = &quot;&quot;</span>
+<span class="nc" id="L41">            val inputList = mutableListOf&lt;String&gt;()</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            while (&quot;-send-&quot; != tempInput) {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                tempInput = readLine() ?: &quot;&quot;</span>
+<span class="nc" id="L44">                inputList.add(tempInput)</span>
+            }
+<span class="nc" id="L46">            inputList.remove(&quot;-send-&quot;)</span>
+<span class="nc" id="L47">            val input = inputList.joinToString(&quot;\n&quot;)</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            if (&quot;-exit-&quot; in input) {</span>
+<span class="nc" id="L49">                connected = false</span>
+<span class="nc" id="L50">                reader.close()</span>
+<span class="nc" id="L51">                connection.close()</span>
+            } else {
+<span class="nc" id="L53">                val answer = Message(nick, input,</span>
+<span class="nc" id="L54">                    LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;)))</span>
+<span class="nc" id="L55">                write(answer)</span>
+            }
+        }
+<span class="nc" id="L58">    }</span>
+
+    private fun write(message: Message) {
+<span class="nc" id="L61">        writer.write((message.checkForFile()).toByteArray().size shr 24)</span>
+<span class="nc" id="L62">        writer.write((message.checkForFile()).toByteArray().size shr 16)</span>
+<span class="nc" id="L63">        writer.write((message.checkForFile()).toByteArray().size shr 8)</span>
+<span class="nc" id="L64">        writer.write((message.checkForFile()).toByteArray().size)</span>
+<span class="nc" id="L65">        writer.write((message.checkForFile()).toByteArray())</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (message.file != null) writer.write(message.file!!)</span>
+<span class="nc" id="L67">    }</span>
+
+    private fun createDir(): String {
+<span class="nc" id="L70">        val directory = File(</span>
+<span class="nc" id="L71">            System.getProperty(&quot;user.home&quot;) +</span>
+<span class="nc" id="L72">                    File.separator + &quot;Desktop&quot; +</span>
+<span class="nc" id="L73">                    File.separator + nick</span>
+        )
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (!directory.exists()) directory.mkdir()</span>
+<span class="nc" id="L76">        return directory.absolutePath</span>
+    }
+
+    private fun writeNewFile(fileName: String, file: ByteArray): String {
+<span class="nc" id="L80">        val resultFile = File(&quot;${createDir()}${File.separator}$fileName&quot;)</span>
+<span class="nc" id="L81">        resultFile.createNewFile()</span>
+<span class="nc" id="L82">        val fos = FileOutputStream(resultFile)</span>
+<span class="nc" id="L83">        fos.write(file)</span>
+<span class="nc" id="L84">        fos.close()</span>
+<span class="nc" id="L85">        return resultFile.absolutePath.replace(&quot;\\&quot;, &quot;***&quot;)</span>
+    }
+
+    private fun getFile(size: Int, stream: InputStream): ByteArray {
+<span class="nc" id="L89">        return stream.readNBytes(size)</span>
+    }
+
+    private fun read() {
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        while (connected) {</span>
+<span class="fc" id="L94">            var size = 0</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            for (i in 0 until 4 ) {</span>
+<span class="fc" id="L96">                size = size shl 8</span>
+<span class="nc" id="L97">                size += reader.read() and 0xff</span>
+            }
+<span class="nc" id="L99">            val msgBytes = ByteArray(size)</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            for (i in 0 until size) {</span>
+<span class="nc" id="L101">                msgBytes[i] = (reader.read().toByte())</span>
+            }
+<span class="nc" id="L103">            val result = &quot;&quot;&quot;:::&quot;&quot;&quot;.toRegex().split(msgBytes.decodeToString())</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">            if (result.size &gt; 3) {</span>
+<span class="nc" id="L105">                println(result[0] + &quot;|&quot;</span>
+<span class="nc" id="L106">                        + result[1] + &quot;|&quot;</span>
+<span class="nc" id="L107">                        + result[2]</span>
+<span class="nc" id="L108">                    .replace(&quot;\\:&quot;, &quot;:&quot;)</span>
+<span class="nc" id="L109">                    .replace(&quot;&quot;&quot;file-:[^ ]*&quot;&quot;&quot;.toRegex(), &quot;[file]&quot; + writeNewFile(result[3], getFile(result[4].toInt(), reader)).replace(&quot;***&quot;, &quot;\\\\&quot;))</span>
+                        )
+            }
+<span class="nc" id="L112">            else println(result[0] + &quot;|&quot; + result[1] + &quot;|&quot; + result[2].replace(&quot;\\:&quot;, &quot;:&quot;))</span>
+        }
+<span class="nc" id="L114">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
