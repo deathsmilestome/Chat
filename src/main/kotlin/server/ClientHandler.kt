@@ -83,7 +83,7 @@ class ClientHandler(private val client: Socket, private val otherClients: Set<Cl
         while (running) {
             val result = readAll(reader)
             if (nick == "") nick = result[2]
-            else if (result[2] == "EXIT") shutdown()
+            else if (result[2] == "-exit-") shutdown()
             else writeAll(readMessage(result, reader))
         }
     }
